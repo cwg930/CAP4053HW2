@@ -1,1 +1,21 @@
-﻿<Properties StartupItem="Homework2/Homework2.csproj" />
+﻿<Properties StartupItem="Homework2/Homework2.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Homework2/Game1.cs">
+    <Files>
+      <File FileName="Homework2/Game1.cs" Line="207" Column="6" />
+      <File FileName="Homework2/NeuralNet.cs" Line="14" Column="3" />
+      <File FileName="Homework2/Player.cs" Line="33" Column="13" />
+      <File FileName="Homework2/GenAlg.cs" Line="79" Column="29" />
+      <File FileName="Homework2/Sensor.cs" Line="32" Column="24" />
+      <File FileName="Homework2/Rangefinder.cs" Line="59" Column="4" />
+      <File FileName="Homework2/AdjacentAgentSensor.cs" Line="38" Column="32" />
+      <File FileName="Homework2/Agent.cs" Line="17" Column="9" />
+      <File FileName="Homework2/NavTarget.cs" Line="11" Column="4" />
+      <File FileName="Homework2/Wall.cs" Line="16" Column="24" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

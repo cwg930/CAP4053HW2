@@ -27,6 +27,10 @@ namespace Homework2
 			{
 			}
 		}
+		public float Range
+		{
+			get{ return range; }
+		}
 		#endregion
 
 		#region Constructors

@@ -18,14 +18,14 @@ namespace Homework2
 	public class Game1 : Game
 	{
 		const bool autonomousPlayer = true;
+		const int maxCycles = 2000;
 		GraphicsDeviceManager graphics;
 		SpriteBatch spriteBatch;
 		SpriteFont font;
 
-		Player player;
-		Wall[] walls;
-		List<Agent> wallList;
-		List<Agent> agents;
+		static Player player;
+		static List<Agent> walls;
+		static List<Agent> agents;
 		LinkedList<String> lines;
 		int numWalls = 0;
 		KeyboardState currentKeyboardState;
@@ -36,9 +36,12 @@ namespace Homework2
 		float playerTurnSpeed;
 		Vector2 moveTarget;
 		bool targetReached = true;
-
+		int numCycles;
+		List<Genome> population;
 		//Debug stuff
 		Texture2D debugTex;
+
+		public static List<Agent> Walls { get { return walls; } }
 
 		public Game1 ()
 		{
@@ -61,10 +64,9 @@ namespace Homework2
 			player = new Player();
 			playerMoveSpeed = 8.0f;
 			playerTurnSpeed = MathHelper.ToRadians (1.0f); 
-			walls = new Wall[numWalls];
+			walls = new List<Agent> (numWalls);
 			for(int i = 0; i < numWalls; i++)
 				walls[i] = new Wall();
-			wallList = new List<Agent> (walls);
 			agents = new List<Agent> ();
 			StreamReader sr = new StreamReader ("agents.txt");
 			lines = new LinkedList<String>();
@@ -74,7 +76,7 @@ namespace Homework2
 			for (int i = 0; i < lines.Count; i++) {
 				agents.Add (new Player ());
 			}
-		
+			numCycles = 0;
 			base.Initialize ();
 				
 		}
@@ -91,15 +93,15 @@ namespace Homework2
 			Vector2 playerPosition = new Vector2 (GraphicsDevice.Viewport.TitleSafeArea.X + GraphicsDevice.Viewport.TitleSafeArea.Width / 2, 
 				GraphicsDevice.Viewport.TitleSafeArea.Y + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
 	
-			player.Initialize (Content.Load<Texture2D> ("Graphics/HW1Player"), playerPosition, 0.0f);
+			player.Initialize (Content.Load<Texture2D> ("Graphics/HW1Player"), playerPosition, 0.0f, playerTurnSpeed, playerMoveSpeed);
 			Random r = new Random ();
-			for (int i = 0; i < numWalls; i++) {				
+			foreach (Wall w in walls) {				
 				Vector2 wallPosition = new Vector2 (r.Next (0, GraphicsDevice.Viewport.TitleSafeArea.Width), 
 					                      r.Next (0, GraphicsDevice.Viewport.TitleSafeArea.Height));
 				if (r.Next (1, 10) <= 5)
-					walls [i].Initialize (Content.Load<Texture2D>("Graphics/HW1WallHorizontal"), wallPosition);
+					w.Initialize (Content.Load<Texture2D>("Graphics/HW1WallHorizontal"), wallPosition);
 				else
-					walls [i].Initialize (Content.Load<Texture2D>("Graphics/HW1WallVertical"), wallPosition);
+					w.Initialize (Content.Load<Texture2D>("Graphics/HW1WallVertical"), wallPosition);
 			}
 			font = Content.Load<SpriteFont> ("Fonts/DebugText");
 			//extremely hacky agent adding code, will break easily if agents.txt isn't formatted correctly
@@ -155,7 +157,7 @@ namespace Homework2
 
 			// Update rangefinders
 			foreach (Rangefinder r in player.Rangefinders)
-				r.Update (wallList);
+				r.Update (walls);
 			// Update pie slice sensors
 			foreach (PieSliceSensor p in player.PieSliceSensors)
 				p.Update (agents);
@@ -231,7 +233,11 @@ namespace Homework2
 			} else {
 				targetReached = true;
 			}
+		
+		}
 
+		private void UpdatePlayerLearning(GameTime gameTime, NavTarget target)
+		{
 		}
 
 		/// <summary>
@@ -246,11 +252,11 @@ namespace Homework2
 			spriteBatch.Begin();
 			player.Draw (spriteBatch);
 			for (int i = 0; i < numWalls; i++) {
-				walls [i].Draw (spriteBatch);
+				(walls [i] as Player).Draw (spriteBatch);
 				//debug stuff
 				spriteBatch.DrawString (font, "Wall " + i + " loc (X,Y): " + walls [i].Position.ToString ()
 					+ "Bounding box: " + walls[i].BoundingBox.ToString(), 
-					new Vector2 (0, GraphicsDevice.Viewport.Height - (font.LineSpacing*(walls.Length-i))), Color.Black);
+					new Vector2 (0, GraphicsDevice.Viewport.Height - (font.LineSpacing*(walls.Count-i))), Color.Black);
 				//spriteBatch.Draw (debugTex, walls [i].BoundingBox, Color.White);
 			}
 			foreach (Player p in agents) {

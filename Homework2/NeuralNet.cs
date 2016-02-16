@@ -12,6 +12,8 @@ namespace Homework2
 		private int neuronsPerHiddenLayer;
 		private List<NeuronLayer> Layers;
 
+		public int NumOutputs { get { return numOutputs; } }
+
 		struct Neuron{
 			public int numInputs;
 			public List<double> Weights { get; set;}
@@ -35,10 +37,10 @@ namespace Homework2
 				}
 			}
 		}
-		public NeuralNet ()
+		public NeuralNet (int inputs, int outputs)
 		{
-			numInputs = 4;
-			numOutputs = 4;
+			numInputs = inputs;
+			numOutputs = outputs;
 			numHiddenLayers = 1;
 			neuronsPerHiddenLayer = 8;
 			CreateNet ();
@@ -94,7 +96,7 @@ namespace Homework2
 			return 1 / (1 + Math.Exp (-activation / response));
 		}
 
-		List<double> Update(List<double> inputs){
+		public List<double> Update(List<double> inputs){
 			List<double> outputs;
 			int cWeight = 0;
 

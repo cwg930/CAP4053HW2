@@ -55,6 +55,8 @@
     <Compile Include="Wall.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="NeuralNet.cs" />
+    <Compile Include="GenAlg.cs" />
+    <Compile Include="NavTarget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icon.png" />
