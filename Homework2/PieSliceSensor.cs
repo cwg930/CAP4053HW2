@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Homework2
 {
@@ -107,6 +108,17 @@ namespace Homework2
 				ActivationLevel++;
 				DetectedAgents.Add (a);
 			}
+		}
+
+		public int Draw(SpriteBatch spriteBatch, SpriteFont font, int lineNum)
+		{
+			foreach (Agent a in DetectedAgents)
+			{
+				Vector2 markerSize = font.MeasureString (marker);
+				spriteBatch.DrawString (font, marker, a.Position, Color.Green);
+			}
+			spriteBatch.DrawString (font, "PieSlice " + marker + " Activation: " + ActivationLevel, new Vector2 (0, font.LineSpacing * lineNum), Color.Black);
+			return lineNum + 1;
 		}
 		#endregion
 	}

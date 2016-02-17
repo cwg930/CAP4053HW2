@@ -51,9 +51,9 @@ namespace Homework2
 			PieSliceSensors.Add (new PieSliceSensor (this, 100, MathHelper.ToRadians (180), "3"));
 			PieSliceSensors.Add (new PieSliceSensor (this, 100, MathHelper.ToRadians (270), "4"));
 
-			Rangefinders.Add (new Rangefinder (this, 100, MathHelper.ToRadians (0)));
-			Rangefinders.Add (new Rangefinder (this, 100, MathHelper.ToRadians (-45)));
-			Rangefinders.Add (new Rangefinder (this, 100, MathHelper.ToRadians (45)));
+			Rangefinders.Add (new Rangefinder (this, 100, MathHelper.ToRadians (0), "Center"));
+			Rangefinders.Add (new Rangefinder (this, 100, MathHelper.ToRadians (-45), "Left"));
+			Rangefinders.Add (new Rangefinder (this, 100, MathHelper.ToRadians (45), "Right"));
 
 			AASensor = new AdjacentAgentSensor (this, 100.0f);
 			navNetwork = new NeuralNet (4, 4);
@@ -108,14 +108,26 @@ namespace Homework2
 			}
 		}
 			
-		public void Draw(SpriteBatch spriteBatch)
+		public int Draw(SpriteBatch spriteBatch, SpriteFont font, int lineNum, bool playerDebugActive)
 		{
 			spriteBatch.Draw (AgentTexture, Position, null, Color.White, Heading, center, 1.0f, SpriteEffects.None, 0f);
+			if (playerDebugActive) {
+				spriteBatch.DrawString (font, "Heading (deg): " + (MathHelper.ToDegrees (Heading) % 360)
+				+ "\nPosition (x,y): " + Position.ToString (), new Vector2 (0, font.LineSpacing * lineNum), Color.Black);
+				lineNum += 2;
+				lineNum = AASensor.Draw (spriteBatch, font, lineNum);
+				foreach (PieSliceSensor p in PieSliceSensors) {
+					lineNum = p.Draw (spriteBatch, font, lineNum);
+				}
+				foreach (Rangefinder r in Rangefinders) {
+					lineNum = r.Draw (spriteBatch, font, lineNum);
+				}
+			}
 		}
 
 		public void EndOfRun()
 		{
-			genotype.fitness += noCollisionBonus;
+			genotype.Fitness += noCollisionBonus;
 		}
 		#endregion
 	}

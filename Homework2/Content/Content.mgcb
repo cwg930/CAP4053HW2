@@ -1,13 +1,21 @@
-﻿#----------------------------- Global Properties ----------------------------#
 
-/outputDir:bin/$(Platform)
+#----------------------------- Global Properties ----------------------------#
+
+/outputDir:../Content
 /intermediateDir:obj/$(Platform)
-/platform:Windows
+/platform:Linux
 /config:
 /profile:Reach
 /compress:False
 
 #-------------------------------- References --------------------------------#
 
+/reference:
 
 #---------------------------------- Content ---------------------------------#
+
+#begin Data/TestData.xml
+/importer:XmlImporter
+/processor:PassThroughProcessor
+/build:Data/TestData.xml
+

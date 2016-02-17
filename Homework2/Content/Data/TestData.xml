@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<XnaContent xmlns:ns="Microsoft.Xna.Framework">
+  <Asset Type="Homework2.NavGoal[]">
+	<Item>
+		<Start>100 200</Start>
+		<End>500 200</End>
+	</Item>
+	<Item>
+		<Start>300 300</Start>
+		<End> 300 400</End>
+	</Item>
+	<Item>
+		<Start>0 0</Start>
+		<End>500 500</End>
+	</Item>
+	<Item>
+		<Start>123 456</Start>
+		<End>654 321</End>
+	</Item>
+	<Item>
+		<Start>400 600</Start>
+		<End>200 200</End>
+	</Item>
+  </Asset>
+</XnaContent>

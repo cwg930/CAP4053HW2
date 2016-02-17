@@ -44,7 +44,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Game1.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="AdjacentAgentSensor.cs" />
     <Compile Include="Agent.cs" />
@@ -56,7 +55,8 @@
     <Compile Include="Player.cs" />
     <Compile Include="NeuralNet.cs" />
     <Compile Include="GenAlg.cs" />
-    <Compile Include="NavTarget.cs" />
+    <Compile Include="Genome.cs" />
+    <Compile Include="Game1.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icon.png" />
@@ -65,6 +65,7 @@
     <None Include="agents.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Content\Data\TestData.xml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="OpenTK.dll.config">

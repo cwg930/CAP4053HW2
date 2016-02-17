@@ -16,6 +16,7 @@ namespace Homework2
 		private float headingOffset;
 		private Point foundPoint;
 		private Texture2D texture;
+		private string label;
 		#endregion
 
 		#region Properties
@@ -38,9 +39,10 @@ namespace Homework2
 		#endregion
 
 		#region Constructors
-		public Rangefinder (Agent owner, int range, float headingOffset) : base(owner, range)
+		public Rangefinder (Agent owner, int range, float headingOffset, string label) : base(owner, range)
 		{
 			this.headingOffset = headingOffset;
+			this.label = label;
 		}
 		#endregion
 
@@ -125,6 +127,13 @@ namespace Homework2
 				// Placeholder to just return a huge value of intersection at infinity
 				return new Point (100000, 100000);
 			}
+		}
+
+		public int Draw(SpriteBatch spriteBatch, SpriteFont font, int lineNum){
+			Vector2 markerSize = font.MeasureString ("o");
+			spriteBatch.DrawString (font, "o", new Vector2 (FoundPoint.X - markerSize.X / 2, FoundPoint.Y - markerSize.Y / 2), Color.Red);
+			spriteBatch.DrawString (font, label +" Rangefinder: " + Reading , new Vector2 (0, font.LineSpacing * lineNum), Color.Black);
+			return lineNum + 1;
 		}
 		#endregion
 	}

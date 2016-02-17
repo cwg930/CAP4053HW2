@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Homework2
 {
@@ -38,6 +39,15 @@ namespace Homework2
 					AgentsInRange.Add (a, new Tuple<float, float>(Vector2.Distance(owner.Position, a.Position), relativeHeading));
 				}
 			}
+		}
+
+		public int Draw(SpriteBatch sb, SpriteFont font, int lineNum){
+			foreach (KeyValuePair<Agent, Tuple<float, float>> agent in AgentsInRange) {
+				sb.DrawString (font, "Agent: " + agent.Key.ToString() + " Distance: " + agent.Value.Item1
+					+ " Rel. Heading: " + agent.Value.Item2, new Vector2 (0, font.LineSpacing * lineNum), Color.Black);
+				lineNum++;
+			}
+			return lineNum;
 		}
 		#endregion
 	}

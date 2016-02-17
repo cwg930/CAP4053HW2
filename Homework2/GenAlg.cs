@@ -3,26 +3,6 @@ using System.Collections.Generic;
 
 namespace Homework2
 {
-	struct Genome
-	{
-		public List<double> Weights { get; set; }
-		public double fitness;
-
-		public Genome()
-		{
-			fitness = 0;
-		}
-		public Genome(double fitness, List<double> weights)
-		{
-			this.Weights = weights;
-			this.fitness = fitness;
-		}
-
-		public bool operator <(Genome lhs, Genome rhs)
-		{
-			return lhs.fitness < rhs.fitness;
-		}
-	}
 
 	public class GenAlg
 	{ 
@@ -101,7 +81,7 @@ namespace Homework2
 			Genome chosen;
 			double currentFitness = 0;
 			for (int i = 0; i < populationSize; i++) {
-				currentFitness = Population [i].fitness;
+				currentFitness = Population [i].Fitness;
 				if (currentFitness >= slice) {
 					chosen = Population [i];
 					break;
@@ -114,7 +94,7 @@ namespace Homework2
 		{
 			int multiplier = 1;
 			for (int i = 0; i < populationSize; i++) {
-				Population [i].fitness = i * multiplier;
+				Population [i].Fitness = i * multiplier;
 			}
 			CalcFitnessStats ();
 		}
@@ -126,18 +106,18 @@ namespace Homework2
 			double lowest = double.MaxValue;
 
 			for (int i = 0; i < populationSize; i++) {
-				if (Population [i].fitness > highest) {
-					highest = Population [i].fitness;
+				if (Population [i].Fitness > highest) {
+					highest = Population [i].Fitness;
 					fittestGenome = i;
 					bestFitness = highest;
 				}
 
-				if (Population [i].fitness < lowest) {
-					lowest = Population [i].fitness;
+				if (Population [i].Fitness < lowest) {
+					lowest = Population [i].Fitness;
 					worstFitness = lowest;
 				}
 
-				totalFitness += Population [i].fitness;
+				totalFitness += Population [i].Fitness;
 			}
 			avgFitness = totalFitness / populationSize;
 		}

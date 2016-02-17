@@ -7,11 +7,17 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.Input;
 using System.Text;
+using System.Xml.Serialization;
 
 #endregion
 
 namespace Homework2
 {
+	struct NavGoal
+	{
+		public Vector2 Start { get; set; }
+		public Vector2 End { get; set; }
+	}
 	/// <summary>
 	/// This is the main type for your game.
 	/// </summary>
@@ -23,9 +29,10 @@ namespace Homework2
 		SpriteBatch spriteBatch;
 		SpriteFont font;
 
-		static Player player;
+		static List<Player> players;
 		static List<Wall> walls;
 		static List<Agent> agents;
+		static List<NavGoal> testData;
 		LinkedList<String> lines;
 		int numWalls = 0;
 		KeyboardState currentKeyboardState;
@@ -152,7 +159,7 @@ namespace Homework2
 			}
 
 			if(!targetReached)
-				UpdatePlayerAuto (gameTime, moveTarget);
+				SeekTarget (gameTime, moveTarget);
 
 			player.UpdateSensors ();
 
@@ -206,7 +213,7 @@ namespace Homework2
 			player.Position = new Vector2 (clampedX, clampedY);
 		}
 
-		private void UpdatePlayerAuto(GameTime gameTime, Vector2 target)
+		private void SeekTarget(GameTime gameTime, Vector2 target)
 		{
 			float distance = Vector2.Distance (player.Position, target);
 			if (distance >= 1f) {
@@ -230,10 +237,6 @@ namespace Homework2
 		
 		}
 
-		private void UpdatePlayerLearning(GameTime gameTime, NavTarget target)
-		{
-		}
-
 		/// <summary>
 		/// This is called when the game should draw itself.
 		/// </summary>
@@ -244,60 +247,12 @@ namespace Homework2
 		
 			//TODO: Add your drawing code here
 			spriteBatch.Begin();
-			player.Draw (spriteBatch);
 			for (int i = 0; i < numWalls; i++) {
 
 				walls [i].Draw (spriteBatch);
 			}
-			foreach (Player p in agents) {
-				p.Draw (spriteBatch);
-			}
-			spriteBatch.DrawString (font, "Heading (deg): " + (MathHelper.ToDegrees (player.Heading) % 360) 
-				+ "\nPosition (x,y): "+ player.Position.ToString(), new Vector2 (0, 0), Color.Black);
-			int j = 2;
-			foreach (KeyValuePair<Agent, Tuple<float, float>> agent in player.AASensor.AgentsInRange) {
-				spriteBatch.DrawString (font, "Agent: " + agent.Key.ToString() + " Distance: " + agent.Value.Item1
-				+ " Rel. Heading: " + agent.Value.Item2, new Vector2 (0, font.LineSpacing * j), Color.Black);
-				j++;
-			}
-
-			// Draw strings indicating Pie slice activation levels
-			spriteBatch.DrawString (font, "Activation Levels: ", new Vector2 (0, font.LineSpacing * j), Color.Black);
-			j++;
-
-			int pieSliceNumber = 1;
-			string pieSliceString = "";
-			foreach (PieSliceSensor p in player.PieSliceSensors)
-			{
-				pieSliceString += "" + pieSliceNumber + ": " + p.ActivationLevel + "\n";
-				pieSliceNumber++;
-			}
-			spriteBatch.DrawString (font, pieSliceString , new Vector2 (0, font.LineSpacing * j), Color.Black);
-			j++;
-
-			// Draw for middle, left, right rangefinders.
-			// Really hacky and stupid but it's fine for this.
-			spriteBatch.DrawString (font, "Left Rangefinder: " + player.Rangefinders[1].Reading , new Vector2 (0, font.LineSpacing * (j+player.PieSliceSensors.Count)), Color.Black);
-			j++;
-			spriteBatch.DrawString (font, "Center Rangefinder: " + player.Rangefinders[0].Reading , new Vector2 (0, font.LineSpacing * (j+player.PieSliceSensors.Count)), Color.Black);
-			j++;
-			spriteBatch.DrawString (font, "Right Rangefinder: " + player.Rangefinders[2].Reading , new Vector2 (0, font.LineSpacing * (j+player.PieSliceSensors.Count)), Color.Black);
-
-			// Use a lowercase "o" as a marker for the end of the rangefinder
-			Vector2 markerSize = font.MeasureString ("o");
-			foreach (Rangefinder r in player.Rangefinders)
-			{
-				spriteBatch.DrawString (font, "o", new Vector2 (r.FoundPoint.X - markerSize.X / 2, r.FoundPoint.Y - markerSize.Y / 2), Color.Red);
-			}
-
-			// Draw labels on pie slice sensor detections.
-			foreach (PieSliceSensor p in player.PieSliceSensors)
-			{
-				foreach (Agent a in p.DetectedAgents)
-				{
-					markerSize = font.MeasureString (p.Marker);
-					spriteBatch.DrawString (font, p.Marker, a.Position, Color.Green);
-				}
+			foreach (Player p in players) {
+				p.Draw (spriteBatch, font, 0);
 			}
 				
 			//more debug
@@ -305,7 +260,15 @@ namespace Homework2
 			spriteBatch.End ();
 
 			base.Draw (gameTime);
-		}			
+		}		
+
+		private void LoadGoals()
+		{
+			FileStream fs = File.OpenRead ("Data/TestData");
+			XmlSerializer serializer = new XmlSerializer (typeof(List<NavGoal>));
+			testData = (List<NavGoal>)serializer.Deserialize (fs);
+		}
 	}
+		
 }
 
