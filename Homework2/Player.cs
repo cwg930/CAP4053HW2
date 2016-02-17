@@ -97,6 +97,17 @@ namespace Homework2
 			return true;
 		}
 
+		public void UpdateSensors()
+		{
+			AASensor.Update (Game1.Agents);
+			foreach (PieSliceSensor p in PieSliceSensors) {
+				p.Update(Game1.Agents);
+			}
+			foreach (Rangefinder r in Rangefinders) {
+				r.Update (Game1.Walls);
+			}
+		}
+			
 		public void Draw(SpriteBatch spriteBatch)
 		{
 			spriteBatch.Draw (AgentTexture, Position, null, Color.White, Heading, center, 1.0f, SpriteEffects.None, 0f);

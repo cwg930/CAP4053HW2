@@ -24,7 +24,7 @@ namespace Homework2
 		SpriteFont font;
 
 		static Player player;
-		static List<Agent> walls;
+		static List<Wall> walls;
 		static List<Agent> agents;
 		LinkedList<String> lines;
 		int numWalls = 0;
@@ -41,7 +41,8 @@ namespace Homework2
 		//Debug stuff
 		Texture2D debugTex;
 
-		public static List<Agent> Walls { get { return walls; } }
+		public static List<Wall> Walls { get { return walls; } }
+		public static List<Agent> Agents { get { return agents; } }
 
 		public Game1 ()
 		{
@@ -64,7 +65,7 @@ namespace Homework2
 			player = new Player();
 			playerMoveSpeed = 8.0f;
 			playerTurnSpeed = MathHelper.ToRadians (1.0f); 
-			walls = new List<Agent> (numWalls);
+			walls = new List<Wall> (numWalls);
 			for(int i = 0; i < numWalls; i++)
 				walls[i] = new Wall();
 			agents = new List<Agent> ();
@@ -153,15 +154,8 @@ namespace Homework2
 			if(!targetReached)
 				UpdatePlayerAuto (gameTime, moveTarget);
 
-			player.AASensor.Update (agents);
+			player.UpdateSensors ();
 
-			// Update rangefinders
-			foreach (Rangefinder r in player.Rangefinders)
-				r.Update (walls);
-			// Update pie slice sensors
-			foreach (PieSliceSensor p in player.PieSliceSensors)
-				p.Update (agents);
-			
 			base.Update (gameTime);
 		}
 
@@ -252,12 +246,8 @@ namespace Homework2
 			spriteBatch.Begin();
 			player.Draw (spriteBatch);
 			for (int i = 0; i < numWalls; i++) {
-				(walls [i] as Player).Draw (spriteBatch);
-				//debug stuff
-				spriteBatch.DrawString (font, "Wall " + i + " loc (X,Y): " + walls [i].Position.ToString ()
-					+ "Bounding box: " + walls[i].BoundingBox.ToString(), 
-					new Vector2 (0, GraphicsDevice.Viewport.Height - (font.LineSpacing*(walls.Count-i))), Color.Black);
-				//spriteBatch.Draw (debugTex, walls [i].BoundingBox, Color.White);
+
+				walls [i].Draw (spriteBatch);
 			}
 			foreach (Player p in agents) {
 				p.Draw (spriteBatch);
