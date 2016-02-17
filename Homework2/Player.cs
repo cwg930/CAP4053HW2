@@ -10,9 +10,7 @@ namespace Homework2
 	public class Player : Agent
 	{
 		#region Fields
-		private Vector2 center;
-//		private float moveSpeed = 8.0f;
-//		private float turnSpeed;
+		private Vector2 center; 
 		#endregion
 
 		#region Properties
@@ -48,6 +46,16 @@ namespace Homework2
 			AASensor = new AdjacentAgentSensor (this, 100.0f);
 		}
 
+		public void UpdateSensors()
+		{
+			AASensor.Update (Game1.Agents);
+			foreach (PieSliceSensor p in PieSliceSensors) {
+				p.Update(Game1.Agents);
+			}
+			foreach (Rangefinder r in Rangefinders) {
+				r.Update (Game1.Walls);
+			}
+		}
 			
 		public void Draw(SpriteBatch spriteBatch)
 		{

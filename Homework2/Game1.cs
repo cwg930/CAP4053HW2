@@ -22,10 +22,9 @@ namespace Homework2
 		SpriteBatch spriteBatch;
 		SpriteFont font;
 
-		Player player;
-		Wall[] walls;
-		List<Agent> wallList;
-		List<Agent> agents;
+		static Player player;
+		static List<Wall> walls;
+		static List<Agent> agents;
 		LinkedList<String> lines;
 		int numWalls = 0;
 		KeyboardState currentKeyboardState;
@@ -39,7 +38,8 @@ namespace Homework2
 
 		//Debug stuff
 		Texture2D debugTex;
-
+		public static List<Wall> Walls { get { return walls; } }
+		public static List<Agent> Agents { get { return agents; } }
 		public Game1 ()
 		{
 			graphics = new GraphicsDeviceManager (this);
@@ -61,10 +61,9 @@ namespace Homework2
 			player = new Player();
 			playerMoveSpeed = 8.0f;
 			playerTurnSpeed = MathHelper.ToRadians (1.0f); 
-			walls = new Wall[numWalls];
+			walls = new List<Wall> (numWalls);
 			for(int i = 0; i < numWalls; i++)
 				walls[i] = new Wall();
-			wallList = new List<Agent> (walls);
 			agents = new List<Agent> ();
 			StreamReader sr = new StreamReader ("agents.txt");
 			lines = new LinkedList<String>();
@@ -151,14 +150,7 @@ namespace Homework2
 			if(!targetReached)
 				UpdatePlayerAuto (gameTime, moveTarget);
 
-			player.AASensor.Update (agents);
-
-			// Update rangefinders
-			foreach (Rangefinder r in player.Rangefinders)
-				r.Update (wallList);
-			// Update pie slice sensors
-			foreach (PieSliceSensor p in player.PieSliceSensors)
-				p.Update (agents);
+			player.UpdateSensors ();
 			
 			base.Update (gameTime);
 		}
@@ -247,11 +239,6 @@ namespace Homework2
 			player.Draw (spriteBatch);
 			for (int i = 0; i < numWalls; i++) {
 				walls [i].Draw (spriteBatch);
-				//debug stuff
-				spriteBatch.DrawString (font, "Wall " + i + " loc (X,Y): " + walls [i].Position.ToString ()
-					+ "Bounding box: " + walls[i].BoundingBox.ToString(), 
-					new Vector2 (0, GraphicsDevice.Viewport.Height - (font.LineSpacing*(walls.Length-i))), Color.Black);
-				//spriteBatch.Draw (debugTex, walls [i].BoundingBox, Color.White);
 			}
 			foreach (Player p in agents) {
 				p.Draw (spriteBatch);
