@@ -1,0 +1,10 @@
+/home/chris/CAP4053/Homework2/XMLGenerator/obj/x86/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/home/chris/CAP4053/Homework2/XMLGenerator/bin/Debug/OpenTK.dll.config
+/home/chris/CAP4053/Homework2/XMLGenerator/bin/Debug/Tao.Sdl.dll.config
+/home/chris/CAP4053/Homework2/XMLGenerator/bin/Debug/XMLGenerator.exe.mdb
+/home/chris/CAP4053/Homework2/XMLGenerator/bin/Debug/XMLGenerator.exe
+/home/chris/CAP4053/Homework2/XMLGenerator/obj/x86/Debug/XMLGenerator.exe
+/home/chris/CAP4053/Homework2/XMLGenerator/obj/x86/Debug/XMLGenerator.exe.mdb
+/home/chris/CAP4053/Homework2/XMLGenerator/bin/Debug/MonoGame.Framework.dll
+/home/chris/CAP4053/Homework2/XMLGenerator/bin/Debug/OpenTK.dll
+/home/chris/CAP4053/Homework2/XMLGenerator/bin/Debug/Tao.Sdl.dll

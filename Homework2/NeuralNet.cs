@@ -15,25 +15,30 @@ namespace Homework2
 		public int NumOutputs { get { return numOutputs; } }
 
 		struct Neuron{
-			public int numInputs;
-			public List<double> Weights { get; set;}
+			private int numInputs;
+			private List<double> weights;
+
+			public int NumInputs { get { return numInputs; } set { numInputs = value; } }
+			public List<double> Weights { get { return weights; } set { weights = value; } }
 
 			public Neuron(int numInputs){
 				this.numInputs = numInputs + 1;
 				Random r = new Random();
+				weights = new List<double>();
 				for(int i = 0; i < this.numInputs; i++)
 				{
-					Weights.Add(r.NextDouble() * 2 - 1);
+					weights.Add(r.NextDouble() * 2 - 1);
 				}
 			}
 		}
 		struct NeuronLayer{
-			int numNeurons;
-			public List<Neuron> Neurons { get; }
+			private List<Neuron> neurons;
+
+			public List<Neuron> Neurons { get { return neurons; } }
 			public NeuronLayer(int numNeurons, int numInputsPerNeuron){
-				this.numNeurons = numNeurons;
+				neurons = new List<Neuron>();
 				for(int i = 0; i < numNeurons; i++){
-					Neurons.Add(new Neuron(numInputsPerNeuron));
+					neurons.Add(new Neuron(numInputsPerNeuron));
 				}
 			}
 		}
@@ -43,6 +48,7 @@ namespace Homework2
 			numOutputs = outputs;
 			numHiddenLayers = 1;
 			neuronsPerHiddenLayer = 8;
+			Layers = new List<NeuronLayer> ();
 			CreateNet ();
 		}
 
@@ -60,7 +66,7 @@ namespace Homework2
 			}
 		}
 
-		List<double> GetWeights(){
+		List<double> GetAllWeights(){
 			List<double> allWeights = new List<double> ();
 			foreach (NeuronLayer l in Layers) {
 				foreach (Neuron n in l.Neurons) {
@@ -72,16 +78,17 @@ namespace Homework2
 			return allWeights;
 		}
 
-		int GetNumWeights(){
+		public int GetNumWeights(){
 			int total = 0;
 			foreach (NeuronLayer l in Layers) {
 				foreach (Neuron n in l.Neurons) {
 					total += n.Weights.Count;
 				}
 			}
+			return total;
 		}
 
-		void SetWeights(List<double> weights){
+		public void SetWeights(List<double> weights){
 			int i = 0;
 			foreach (NeuronLayer l in Layers) {
 				foreach (Neuron n in l.Neurons) {
@@ -97,7 +104,7 @@ namespace Homework2
 		}
 
 		public List<double> Update(List<double> inputs){
-			List<double> outputs;
+			List<double> outputs = new List<double>();
 			int cWeight = 0;
 
 			if (inputs.Count != numInputs) {
@@ -106,7 +113,7 @@ namespace Homework2
 
 			for (int i = 0; i < numHiddenLayers + 1; i++) {
 				if (i > 0) {
-					inputs = outputs;
+					inputs = new List<double> (outputs);
 				}
 				outputs.Clear ();
 
@@ -114,8 +121,8 @@ namespace Homework2
 
 				for (int j = 0; j < Layers [i].Neurons.Count; j++) {
 					double netInput = 0;
-					int numInputs = Layers [i].Neurons [j].numInputs;
-					for (int k = 0; k < numInputs; k++) {
+					int numInputs = Layers [i].Neurons [j].NumInputs;
+					for (int k = 0; k < numInputs - 1; k++) {
 						netInput += Layers [i].Neurons [j].Weights [k] * inputs [cWeight++];
 					}
 

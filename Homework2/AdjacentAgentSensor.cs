@@ -41,11 +41,13 @@ namespace Homework2
 			}
 		}
 
-		public int Draw(SpriteBatch sb, SpriteFont font, int lineNum){
-			foreach (KeyValuePair<Agent, Tuple<float, float>> agent in AgentsInRange) {
-				sb.DrawString (font, "Agent: " + agent.Key.ToString() + " Distance: " + agent.Value.Item1
+		public int Draw(SpriteBatch sb, SpriteFont font, int lineNum, bool showDebugText){
+			if (showDebugText) {
+				foreach (KeyValuePair<Agent, Tuple<float, float>> agent in AgentsInRange) {
+					sb.DrawString (font, "Agent: " + agent.Key.ToString () + " Distance: " + agent.Value.Item1
 					+ " Rel. Heading: " + agent.Value.Item2, new Vector2 (0, font.LineSpacing * lineNum), Color.Black);
-				lineNum++;
+					lineNum++;
+				}
 			}
 			return lineNum;
 		}

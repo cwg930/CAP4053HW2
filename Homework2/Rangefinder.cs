@@ -129,11 +129,14 @@ namespace Homework2
 			}
 		}
 
-		public int Draw(SpriteBatch spriteBatch, SpriteFont font, int lineNum){
+		public int Draw(SpriteBatch spriteBatch, SpriteFont font, int lineNum, bool showDebugText){
 			Vector2 markerSize = font.MeasureString ("o");
 			spriteBatch.DrawString (font, "o", new Vector2 (FoundPoint.X - markerSize.X / 2, FoundPoint.Y - markerSize.Y / 2), Color.Red);
-			spriteBatch.DrawString (font, label +" Rangefinder: " + Reading , new Vector2 (0, font.LineSpacing * lineNum), Color.Black);
-			return lineNum + 1;
+			if (showDebugText) {
+				spriteBatch.DrawString (font, label + " Rangefinder: " + Reading, new Vector2 (0, font.LineSpacing * lineNum), Color.Black);
+				lineNum++;
+			}
+			return lineNum;
 		}
 		#endregion
 	}

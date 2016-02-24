@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProjectGuid>{258597DF-1A56-4645-AFE5-FAAD80F9DD89}</ProjectGuid>
+    <ProjectGuid>{C6267A55-BF27-4523-9072-C5E317F6E100}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Homework2</RootNamespace>
-    <AssemblyName>Homework2</AssemblyName>
+    <RootNamespace>XMLGenerator</RootNamespace>
+    <AssemblyName>XMLGenerator</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -44,31 +44,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
-    <Compile Include="AdjacentAgentSensor.cs" />
-    <Compile Include="Agent.cs" />
-    <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="PieSliceSensor.cs" />
-    <Compile Include="Rangefinder.cs" />
-    <Compile Include="Sensor.cs" />
-    <Compile Include="Wall.cs" />
-    <Compile Include="Player.cs" />
-    <Compile Include="NeuralNet.cs" />
-    <Compile Include="Genome.cs" />
     <Compile Include="Game1.cs" />
-    <Compile Include="Population.cs" />
-    <Compile Include="GoalSensor.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icon.png" />
     <None Include="Content\Content.mgcb" />
     <None Include="packages.config" />
-    <None Include="agents.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\Data\TestData.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="OpenTK.dll.config">
@@ -77,24 +60,6 @@
     <Content Include="Tao.Sdl.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Graphics\HW1Player.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Graphics\HW1WallHorizontal.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Graphics\HW1WallVertical.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Fonts\DebugText.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Graphics\HW1Agent2.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
 </Project>

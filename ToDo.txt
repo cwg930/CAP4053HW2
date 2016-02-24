@@ -1,0 +1,4 @@
+-setup player movement testing
+-fix genetic algorithm code
+
+

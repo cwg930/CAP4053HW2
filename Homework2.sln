@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Homework2", "Homework2\Homework2.csproj", "{258597DF-1A56-4645-AFE5-FAAD80F9DD89}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XMLGenerator", "XMLGenerator\XMLGenerator.csproj", "{C6267A55-BF27-4523-9072-C5E317F6E100}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -13,5 +15,9 @@ Global
 		{258597DF-1A56-4645-AFE5-FAAD80F9DD89}.Debug|x86.Build.0 = Debug|x86
 		{258597DF-1A56-4645-AFE5-FAAD80F9DD89}.Release|x86.ActiveCfg = Release|x86
 		{258597DF-1A56-4645-AFE5-FAAD80F9DD89}.Release|x86.Build.0 = Release|x86
+		{C6267A55-BF27-4523-9072-C5E317F6E100}.Debug|x86.ActiveCfg = Debug|x86
+		{C6267A55-BF27-4523-9072-C5E317F6E100}.Debug|x86.Build.0 = Debug|x86
+		{C6267A55-BF27-4523-9072-C5E317F6E100}.Release|x86.ActiveCfg = Release|x86
+		{C6267A55-BF27-4523-9072-C5E317F6E100}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 EndGlobal

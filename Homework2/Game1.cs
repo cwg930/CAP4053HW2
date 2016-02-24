@@ -13,10 +13,14 @@ using System.Xml.Serialization;
 
 namespace Homework2
 {
-	struct NavGoal
-	{
+	public struct NavGoal{
 		public Vector2 Start { get; set; }
 		public Vector2 End { get; set; }
+
+		public NavGoal(Vector2 s, Vector2 e){
+			Start = s;
+			End = e;
+		}
 	}
 	/// <summary>
 	/// This is the main type for your game.
@@ -24,17 +28,19 @@ namespace Homework2
 	public class Game1 : Game
 	{
 		const bool autonomousPlayer = true;
-		const int maxCycles = 2000;
+		const int maxTicks = 300;
+		const int numPlayers = 10;
 		GraphicsDeviceManager graphics;
 		SpriteBatch spriteBatch;
 		SpriteFont font;
 
-		static List<Player> players;
-		static List<Wall> walls;
+		List<Player> players;
+		Population population;
+		static List<Agent> walls;
 		static List<Agent> agents;
-		static List<NavGoal> testData;
+		List<NavGoal> testData;
 		LinkedList<String> lines;
-		int numWalls = 0;
+		int numWalls = 1;
 		KeyboardState currentKeyboardState;
 		KeyboardState previousKeyboardState;
 		MouseState currentMouseState;
@@ -43,12 +49,15 @@ namespace Homework2
 		float playerTurnSpeed;
 		Vector2 moveTarget;
 		bool targetReached = true;
-		int numCycles;
-		List<Genome> population;
+		int numTicks;
+		int testCounter;
+		int generation;
+		bool firstRun = true;
 		//Debug stuff
 		Texture2D debugTex;
 
-		public static List<Wall> Walls { get { return walls; } }
+		public List<Player> Players { get { return players; } }
+		public static List<Agent> Walls { get { return walls; } }
 		public static List<Agent> Agents { get { return agents; } }
 
 		public Game1 ()
@@ -56,6 +65,8 @@ namespace Homework2
 			graphics = new GraphicsDeviceManager (this);
 			Content.RootDirectory = "Content";
 			graphics.IsFullScreen = false;
+			graphics.PreferredBackBufferWidth = 1024;
+			graphics.PreferredBackBufferHeight = 768;
 			this.IsMouseVisible = true;
 
 		}
@@ -69,12 +80,15 @@ namespace Homework2
 		protected override void Initialize ()
 		{
 			// TODO: Add your initialization logic here
-			player = new Player();
+			players = new List<Player>();
+			for (int i = 0; i < numPlayers; i++) {
+				players.Add (new Player ());
+			}
 			playerMoveSpeed = 8.0f;
 			playerTurnSpeed = MathHelper.ToRadians (1.0f); 
-			walls = new List<Wall> (numWalls);
-			for(int i = 0; i < numWalls; i++)
-				walls[i] = new Wall();
+			walls = new List<Agent> (numWalls);
+			//for(int i = 0; i < numWalls; i++)
+			//	walls.Add (new Wall());
 			agents = new List<Agent> ();
 			StreamReader sr = new StreamReader ("agents.txt");
 			lines = new LinkedList<String>();
@@ -84,7 +98,10 @@ namespace Homework2
 			for (int i = 0; i < lines.Count; i++) {
 				agents.Add (new Player ());
 			}
-			numCycles = 0;
+			numTicks = maxTicks;
+			testCounter = 0;
+			generation = 0;
+			LoadGoals ();
 			base.Initialize ();
 				
 		}
@@ -98,18 +115,35 @@ namespace Homework2
 			// Create a new SpriteBatch, which can be used to draw textures.
 			spriteBatch = new SpriteBatch (GraphicsDevice);
 			//TODO: use this.Content to load your game content here 
-			Vector2 playerPosition = new Vector2 (GraphicsDevice.Viewport.TitleSafeArea.X + GraphicsDevice.Viewport.TitleSafeArea.Width / 2, 
-				GraphicsDevice.Viewport.TitleSafeArea.Y + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
-	
-			player.Initialize (Content.Load<Texture2D> ("Graphics/HW1Player"), playerPosition, 0.0f, playerTurnSpeed, playerMoveSpeed);
+			Vector2 playerPosition = testData[testCounter].Start;
+			foreach (Player p in players) {
+				p.Initialize (Content.Load<Texture2D> ("Graphics/HW1Player"), playerPosition, 0.0f);
+			}
+			population = new Population (numPlayers, players [0].NavNetwork.GetNumWeights ());
 			Random r = new Random ();
-			foreach (Wall w in walls) {				
-				Vector2 wallPosition = new Vector2 (r.Next (0, GraphicsDevice.Viewport.TitleSafeArea.Width), 
-					                      r.Next (0, GraphicsDevice.Viewport.TitleSafeArea.Height));
-				if (r.Next (1, 10) <= 5)
-					w.Initialize (Content.Load<Texture2D>("Graphics/HW1WallHorizontal"), wallPosition);
-				else
-					w.Initialize (Content.Load<Texture2D>("Graphics/HW1WallVertical"), wallPosition);
+			Texture2D wallHorizTex = Content.Load<Texture2D> ("Graphics/HW1WallHorizontal");
+			float position = 0;
+			while (position < GraphicsDevice.Viewport.TitleSafeArea.Width) {
+				Wall w = new Wall ();
+				w.Initialize (wallHorizTex, new Vector2 (position, 0));
+				walls.Add (w);
+				w = new Wall ();
+				w.Initialize (wallHorizTex, new Vector2 (position, 
+					GraphicsDevice.Viewport.TitleSafeArea.Height - wallHorizTex.Height));
+				walls.Add (w);
+				position += wallHorizTex.Width;					
+			}
+			Texture2D wallVertTex = Content.Load<Texture2D> ("Graphics/HW1WallVertical");
+			position = 0;
+			while (position < GraphicsDevice.Viewport.TitleSafeArea.Height) {
+				Wall w = new Wall ();
+				w.Initialize (wallVertTex, new Vector2 (0, position));
+				walls.Add (w);
+				w = new Wall ();
+				w.Initialize (wallVertTex, new Vector2 (GraphicsDevice.Viewport.TitleSafeArea.Width - wallVertTex.Width,
+					position));
+				walls.Add (w);
+				position += wallVertTex.Height;					
 			}
 			font = Content.Load<SpriteFont> ("Fonts/DebugText");
 			//extremely hacky agent adding code, will break easily if agents.txt isn't formatted correctly
@@ -148,29 +182,71 @@ namespace Homework2
 			currentMouseState = Mouse.GetState ();
 			//player.Update (gameTime, currentKeyboardState, walls, GraphicsDevice.Viewport);
 
-			if (currentMouseState.LeftButton == ButtonState.Pressed && 
+			/*if (currentMouseState.LeftButton == ButtonState.Pressed && 
 				previousMouseState.LeftButton == ButtonState.Released) {
 				moveTarget = new Vector2 (currentMouseState.X, currentMouseState.Y);
 				targetReached = false;
-			}
+			}*/
 			//stop
-			if (currentKeyboardState.IsKeyDown (Keys.X) && previousKeyboardState.IsKeyUp (Keys.X)) {
-				targetReached = true;
+			if (currentKeyboardState.IsKeyDown (Keys.S) && previousKeyboardState.IsKeyUp (Keys.S)) {
+				SaveWeights ();
 			}
-
+			/*
 			if(!targetReached)
-				SeekTarget (gameTime, moveTarget);
+				targetReached = players[0].SeekTarget (moveTarget, GraphicsDevice.Viewport);
+			*/
 
-			player.UpdateSensors ();
+			UpdatePopulation ();
+			if (firstRun) {
+				firstRun = false;
+			}
+			/*if (!targetReached)
+				targetReached = players [0].SeekTarget (moveTarget, GraphicsDevice.Viewport);
+			*/
 
+			foreach (Player p in players) {
+				p.UpdateSensors ();
+			}
 			base.Update (gameTime);
 		}
+			/*
+			 * Keep number of ticks 
+			 */
+		private void UpdatePopulation()
+		{
+			//Console.WriteLine (numTicks);
+			if (numTicks < maxTicks) {
+				foreach (Player p in players) {
+					p.Update (moveTarget);
+				}
+				numTicks++;
+			} else {
+				if (!firstRun) {
+					int mod = (((testCounter - 1) % testData.Count) + testData.Count) % testData.Count;
+					foreach (Player p in players) {
+						p.EndOfRun (testData[mod].Start, moveTarget);
+					}
+					population = population.Epoch ();
+					generation++;
+				}
+				int i = 0;
+				foreach (Player p in players) {
+					p.UpdateGenotype(population.Genomes [i++]);
+					p.Position = testData [testCounter].Start;
+					p.Heading = 0;
+					moveTarget = testData [testCounter].End;
+				}
+				numTicks = 0;
+				testCounter = (testCounter + 1) % testData.Count ;
+			}
+		}
+
 
 		/*	Player movement method
 		 *  to be replaced by player.Update()
 		 * */
 
-		private void UpdatePlayerManual(GameTime gameTime)
+		private void UpdatePlayerManual(GameTime gameTime, Player player)
 		{
 			float velX = (float)(Math.Cos (player.Heading) * playerMoveSpeed);
 			float velY = (float)(Math.Sin (player.Heading) * playerMoveSpeed);
@@ -212,8 +288,9 @@ namespace Homework2
 			float clampedY = MathHelper.Clamp (player.Position.Y, player.Height / 2, GraphicsDevice.Viewport.Height - player.Height / 2);
 			player.Position = new Vector2 (clampedX, clampedY);
 		}
-
-		private void SeekTarget(GameTime gameTime, Vector2 target)
+		//Moved to player class (not yet tested) - delete this if it worked
+		/*
+		private void SeekTarget(GameTime gameTime, Player player, Vector2 target)
 		{
 			float distance = Vector2.Distance (player.Position, target);
 			if (distance >= 1f) {
@@ -236,7 +313,7 @@ namespace Homework2
 			}
 		
 		}
-
+		*/
 		/// <summary>
 		/// This is called when the game should draw itself.
 		/// </summary>
@@ -247,15 +324,21 @@ namespace Homework2
 		
 			//TODO: Add your drawing code here
 			spriteBatch.Begin();
-			for (int i = 0; i < numWalls; i++) {
-
-				walls [i].Draw (spriteBatch);
+			foreach (Wall w in walls) {
+				w.Draw (spriteBatch);
 			}
+			int j = 0; 
 			foreach (Player p in players) {
-				p.Draw (spriteBatch, font, 0);
+				if (j == 0)
+					p.Draw (spriteBatch, font, 0, true);
+				else
+					p.Draw (spriteBatch, font, 0, false);
+				j++;
 			}
-				
-			//more debug
+			Vector2 markerSize = font.MeasureString ("x");
+			spriteBatch.DrawString (font, "x", new Vector2 (moveTarget.X - markerSize.X / 2, moveTarget.Y - markerSize.Y / 2), Color.Green);
+
+			spriteBatch.DrawString (font, "Generation: " + generation, new Vector2 (32, GraphicsDevice.Viewport.TitleSafeArea.Height - font.LineSpacing - 32), Color.Black);
 			//spriteBatch.Draw(debugTex, player.BoundingBox, Color.White);
 			spriteBatch.End ();
 
@@ -264,9 +347,15 @@ namespace Homework2
 
 		private void LoadGoals()
 		{
-			FileStream fs = File.OpenRead ("Data/TestData");
+			FileStream fs = File.OpenRead ("Content/Data/TestData.xml");
 			XmlSerializer serializer = new XmlSerializer (typeof(List<NavGoal>));
 			testData = (List<NavGoal>)serializer.Deserialize (fs);
+		}
+
+		private void SaveWeights(){
+			StreamWriter writer = new StreamWriter ("Genomes.xml");
+			XmlSerializer serializer = new XmlSerializer (typeof(List<Genome>));
+			serializer.Serialize (writer, population.Genomes);
 		}
 	}
 		

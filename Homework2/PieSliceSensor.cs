@@ -110,15 +110,18 @@ namespace Homework2
 			}
 		}
 
-		public int Draw(SpriteBatch spriteBatch, SpriteFont font, int lineNum)
+		public int Draw(SpriteBatch spriteBatch, SpriteFont font, int lineNum, bool showDebugText)
 		{
 			foreach (Agent a in DetectedAgents)
 			{
 				Vector2 markerSize = font.MeasureString (marker);
 				spriteBatch.DrawString (font, marker, a.Position, Color.Green);
 			}
-			spriteBatch.DrawString (font, "PieSlice " + marker + " Activation: " + ActivationLevel, new Vector2 (0, font.LineSpacing * lineNum), Color.Black);
-			return lineNum + 1;
+			if (showDebugText) {
+				spriteBatch.DrawString (font, "PieSlice " + marker + " Activation: " + ActivationLevel, new Vector2 (0, font.LineSpacing * lineNum), Color.Black);
+				lineNum++;
+			}
+			return lineNum;
 		}
 		#endregion
 	}
